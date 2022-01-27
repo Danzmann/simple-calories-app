@@ -33,12 +33,13 @@ Currently we have the following routes for authentication:
 /users/logout
 /users/refreshToken
 /users/info <- Return currently logged user data
+
+/products/:userId <- (GET, POST) on products for a user (regular user messes with his products, admin messes with anyone's) 
 ```
 
 It is yet to be implemented:
 ```
-/products/:userId <- (GET, POST) on products for a user (regular user messes with his products, admin messes with anyone's) 
-/products/:userId/:productId <- (PUT, DELETE) on a product for a user (same authentication logic as the one above)
+/products/:userId/:productId <- (PUT, DELETE) on a product for a user (same authentication logic as the one above)1
 /products/report <- admins only, get the reporting thingy information
 ```
 

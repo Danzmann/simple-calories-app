@@ -23,12 +23,10 @@ const User = new Schema({
     type: String,
     default: "local",
   },
-  roles: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Role',
-    },
-  ],
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
   refreshToken: {
     type: [Session],
   },

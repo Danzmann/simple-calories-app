@@ -1,7 +1,6 @@
 const express = require("express")
 const router = express.Router()
 const User = require("../models/user.model")
-const Role = require("../models/userRole.model")
 const passport = require("passport")
 const jwt = require("jsonwebtoken")
 
@@ -45,15 +44,9 @@ router.post("/signup", (req, res, next) => {
               res.send(err)
             } else {
               // By default, we add a "User" role to all users, there is currently no method to add an admin via API
-              Role.findOne({ name: "user" }, (err, role) => {
-                if (err) {
-                  res.status(500).send({ message: err })
-                  return
-                }
-                sUser.roles.push(role._id)
+              if (!user.IsAdmin) {
                 sUser.save()
-              })
-
+              }
               res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
               // Currently, in the scope of this project, all new created users are regular users, admins must be created directly in DB
               res.send({ success: true, token, user, isAdmin: false })
@@ -77,13 +70,8 @@ router.post("/login", passport.authenticate("local"), (req, res, next) => {
           res.send(err)
         } else {
           // :todo For now there is only one role so we get it by index 0
-          Role.findById(user.roles[0]).then(
-            role => {
-              res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
-              res.send({ success: true, token, user, isAdmin: role.name === 'admin' })
-            },
-            err => next(err)
-          )
+          res.cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+          res.send({ success: true, token, user, isAdmin: user.isAdmin })
         }
       })
     },
@@ -107,9 +95,6 @@ router.post("/refreshToken", (req, res, next) => {
               item => item.refreshToken === refreshToken
             )
             if (tokenIndex === -1) {
-            }
-
-            if (tokenIndex === -1) {
               res.statusCode = 401
               res.send("Unauthorized")
             } else {
@@ -123,13 +108,8 @@ router.post("/refreshToken", (req, res, next) => {
                   res.send(err)
                 } else {
                   // :todo For now there is only one role so we get it by index 0
-                  Role.findById(user.roles[0]).then(
-                    role => {
-                      res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
-                      res.send({ success: true, token, isAdmin: role.name === 'admin' })
-                    },
-                    err => next(err)
-                  )
+                  res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
+                  res.send({ success: true, token, isAdmin: user.isAdmin })
                 }
               })
             }
