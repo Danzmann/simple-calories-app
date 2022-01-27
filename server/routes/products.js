@@ -60,7 +60,7 @@ router.get("/foodEntries", async (req, res, next) => {
 router.post("/foodEntries", async (req, res, next) => {
   const credentials = await credential_check(req, next)
   if (!credentials) return res.status(401).send("Unauthorized")
-  const { isAdmin, userId } = credentials
+  const {isAdmin, userId } = credentials
 
   if (!req.body.foodName || !req.body.caloricValue) {
     res.statusCode = 500
@@ -93,16 +93,29 @@ router.put("/foodEntries", async (req, res, next) => {
   const credentials = await credential_check(req, next)
   if (!credentials || !credentials.isAdmin) return res.status(401).send("Unauthorized")
 
-  FoodEntry.findById(req.body.foodEntryId, (err, ent) => {
-    if (err) return res.sendStatus(400)
-    ent.foodName =     req.body.foodName ?     req.body.foodName :     ent.foodName
-    ent.caloricValue = req.body.caloricValue ? req.body.caloricValue : ent.caloricValue
-    ent.foodPrice =    req.body.foodPrice ?    req.body.foodPrice :    ent.foodPrice
-    ent.eatingTime =   req.body.eatingTime ?   req.body.eatingTime :   ent.foodName
+  FoodEntry.findByIdAndUpdate(
+    req.body.foodEntryId,
+    req.body,
+    {new: true},
+    (err, ent) => {
+        if (err) return res.status(500).send(err);
+        return res.send(ent);
+    })
+})
 
-    console.log(ent)
+router.delete("/foodEntries", async (req, res, next) => {
+  const credentials = await credential_check(req, next)
+  if (!credentials || !credentials.isAdmin) return res.status(401).send("Unauthorized")
 
-    ent.save(() => {res.sendStatus(204)})
+  FoodEntry.findByIdAndRemove(req.body.foodEntryId, (err, entry) => {
+    if (err) return res.status(500).send(err);
+
+    const response = {
+      message: "Sucessfully delete",
+      id: entry._id
+    };
+
+    return res.status(200).send(response);
   })
 })
 
