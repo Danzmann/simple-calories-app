@@ -73,7 +73,7 @@ router.post("/foodEntries", async (req, res, next) => {
       foodName: req.body.foodName,
       caloricValue: req.body.caloricValue,
       foodPrice: req.body.foodPrice,
-      eatingTime: req.body.eatingTime,
+      eatingTime: req.body.eatingTime || new Date(),
       userId
     });
 
