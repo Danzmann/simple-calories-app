@@ -109,7 +109,7 @@ router.post("/refreshToken", (req, res, next) => {
                 } else {
                   // :todo For now there is only one role so we get it by index 0
                   res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
-                  res.send({ success: true, token, isAdmin: user.isAdmin })
+                  res.send({ success: true, token, user })
                 }
               })
             }

@@ -2,13 +2,14 @@ import React, { Dispatch, SetStateAction, useState } from "react"
 
 // :todo this
 type UserType = {
-  token?: string,
+  token?: string
   user?: {
-    firstName: string,
-    lastName: string,
-    username: string,
+    id: string
+    firstName: string
+    lastName: string
+    username: string
+    isAdmin: boolean
   },
-  isAdmin?: boolean,
 }
 
 interface UserProps {
@@ -18,14 +19,15 @@ interface UserProps {
 
 const UserContext = React.createContext<UserProps>({} as UserProps)
 
-let initialState = {
+export let initialState = {
   token: '',
   user: {
+    id: '',
     firstName: '',
     lastName: '',
     username: '',
+    isAdmin: false,
   },
-  isAdmin: false,
 }
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {

@@ -6,25 +6,30 @@ import Swal from 'sweetalert2'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import AppWrapper from '../components/AppWrapper'
-import Title from '../components/Title'
+import AppWrapper from '../components/Layout/AppWrapper'
+import Title from '../components/Atoms/Title'
+
 import { UserContext } from '../context/UserContext'
 
 import { ApiLoginData } from '../types/api.types'
-import { getNextApi } from '../utils/apiConfig'
+
+import { postUserLogin } from '../api/userLogin'
 
 const StyledButton = styled(Button)`
   margin: 0 12px;
 `
 
-async function loginFetcher(url: string, email: string, password: string): Promise<ApiLoginData | null> {
-  const res = await fetch(`${url}?${new URLSearchParams({ email, password })}`)
-  if (!res.ok) {
-    console.log(res)
-    console.log(res.json())
+async function loginFetcher(email: string, password: string): Promise<ApiLoginData | null> {
+  const res = await postUserLogin(email, password)
+  if (res.errCode) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: res.errMessage,
+    })
     return null
   }
-  return await res.json()
+  return res
 }
 
 const Login: NextPage = () => {
@@ -36,20 +41,22 @@ const Login: NextPage = () => {
 
   const router = useRouter()
 
-  const formSubmitHandler = async (e: Event) => {
-    e.preventDefault()
+  const formSubmitHandler = async () => {
     setLoading(true)
 
-    const response = await loginFetcher(getNextApi(), email, password)
+    const response = await loginFetcher(email, password)
     setLoading(false)
     if (!response) return
 
     setUserContext(oldValues => ({
       ...oldValues,
       token: response.token,
-      user: response.user,
-      isAdmin: response.isAdmin,
+      user: {
+        id: response.user._id,
+        ...response.user
+      },
     }))
+    router.push('/')
   }
 
   return (

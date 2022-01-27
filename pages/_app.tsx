@@ -7,6 +7,7 @@ import theme from '../globals/global.styles'
 import 'antd/dist/antd.css'
 
 import { UserProvider } from '../context/UserContext'
+import { ProductsProvider } from '../context/ProductsContext'
 
 const GlobalStyle = createGlobalStyle<{ theme: any }>(
   ({
@@ -43,22 +44,24 @@ const App = styled.div({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <UserProvider>
-      <ThemeProvider theme={theme}>
-        <Head>
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
-          />
+      <ProductsProvider>
+        <ThemeProvider theme={theme}>
+          <Head>
+            <meta
+              name="viewport"
+              content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
+            />
 
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
 
-        <GlobalStyle />
+          <GlobalStyle />
 
-        <App>
-          <Component {...pageProps} />
-        </App>
-      </ThemeProvider>
+          <App>
+            <Component {...pageProps} />
+          </App>
+        </ThemeProvider>
+      </ProductsProvider>
     </UserProvider>
   )
 }
