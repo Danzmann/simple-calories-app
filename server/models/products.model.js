@@ -7,8 +7,12 @@ const FoodEntry = new Schema({
     default: "",
   },
   caloricValue: {
-    type: String,
+    type: Number,
     default: 0.00,
+  },
+  foodPrice: {
+      type: Number,
+      default: 0.00
   },
   eatingTime: {
     type: Date,
