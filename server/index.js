@@ -24,6 +24,7 @@ require("./strategies/localStrategy")
 require("./authenticate")
 
 const userRouter = require("./routes/user")
+const productsRouter = require("./routes/products")
 
 const app = express()
 
@@ -83,6 +84,8 @@ app.use(cors(corsOptions))
 app.use(passport.initialize())
 
 app.use("/users", userRouter)
+
+app.use("/products", productsRouter)
 
 // Standard health check
 app.get("/", function (req, res) {
