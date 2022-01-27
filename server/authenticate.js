@@ -6,7 +6,7 @@ exports.COOKIE_OPTIONS = {
   secure: !dev,
   httpOnly: true,
   signed: true,
-  sameSite: "none",
+  sameSite: "Lax",
   maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY) * 1000,
 }
 

@@ -3,6 +3,7 @@ const router = express.Router()
 const User = require("../models/user.model")
 const Role = require("../models/userRole.model")
 const passport = require("passport")
+const jwt = require("jsonwebtoken")
 
 const {
   getToken,
@@ -105,6 +106,8 @@ router.post("/refreshToken", (req, res, next) => {
             const tokenIndex = user.refreshToken.findIndex(
               item => item.refreshToken === refreshToken
             )
+            if (tokenIndex === -1) {
+            }
 
             if (tokenIndex === -1) {
               res.statusCode = 401
@@ -119,8 +122,14 @@ router.post("/refreshToken", (req, res, next) => {
                   res.statusCode = 500
                   res.send(err)
                 } else {
-                  res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
-                  res.send({ success: true, token })
+                  // :todo For now there is only one role so we get it by index 0
+                  Role.findById(user.roles[0]).then(
+                    role => {
+                      res.cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
+                      res.send({ success: true, token, isAdmin: role.name === 'admin' })
+                    },
+                    err => next(err)
+                  )
                 }
               })
             }
