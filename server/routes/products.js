@@ -103,11 +103,11 @@ router.put("/foodEntries", async (req, res, next) => {
     })
 })
 
-router.delete("/foodEntries", async (req, res, next) => {
+router.delete("/foodEntries/:foodEntryId", async (req, res, next) => {
   const credentials = await credential_check(req, next)
   if (!credentials || !credentials.isAdmin) return res.status(401).send("Unauthorized")
 
-  FoodEntry.findByIdAndRemove(req.body.foodEntryId, (err, entry) => {
+  FoodEntry.findByIdAndRemove(req.params.foodEntryId, (err, entry) => {
     if (err) return res.status(500).send(err);
 
     const response = {
@@ -117,6 +117,58 @@ router.delete("/foodEntries", async (req, res, next) => {
 
     return res.status(200).send(response);
   })
+})
+
+async function fetchEntriesData(startDate, endDate) {
+  let promise = FoodEntry.find({createdAt: { $gte: startDate, $lt: endDate}})
+  return promise  
+}
+
+function digestedData(rawData){
+  let totalCalories = 0.00
+  let entryCount = 0
+  let userList = []
+
+  rawData.forEach(entry => {
+    totalCalories += entry.caloricValue;
+    entryCount += 1;
+    userList.push(entry.userId)
+  })
+
+  let distinctUserCount = new Set(userList).size;
+
+  const avgCal = distinctUserCount ? (totalCalories / distinctUserCount) : 0;
+
+  return {entryCount, avgCal};
+}
+
+router.get("/report", async (req, res, next) => {
+  const credentials = await credential_check(req, next)
+  if (!credentials || !credentials.isAdmin) return res.status(401).send("Unauthorized")
+
+  const today = new Date();
+  const lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+  const last2Week = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 14);
+
+  lastWeekData = await fetchEntriesData(lastWeek, new Date());
+  last2WeeksData = await fetchEntriesData(last2Week, lastWeek);
+
+  let {entryCount, avgCal} = digestedData(lastWeekData);
+
+  const lastWeekReport = {
+    entriesCreated: entryCount,
+    averageCalories: avgCal
+  };
+
+  let secondReport = digestedData(last2WeeksData);
+
+  const last2WeeksReport = {
+    entriesCreated: secondReport.entryCount,
+    averageCalories: secondReport.avgCal
+  }
+
+  return res.send({success: true, report: {lastWeekReport, last2WeeksReport}})
+
 })
 
 module.exports = router
