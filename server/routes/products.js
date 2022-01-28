@@ -94,7 +94,7 @@ router.put("/foodEntries/:foodEntryId", async (req, res, next) => {
   if (!credentials || !credentials.isAdmin) return res.status(401).send("Unauthorized")
 
   FoodEntry.findByIdAndUpdate(
-    req.param.foodEntryId,
+    req.params.foodEntryId,
     req.body,
     {new: true},
     (err, ent) => {
