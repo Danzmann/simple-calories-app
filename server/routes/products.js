@@ -47,12 +47,12 @@ router.get("/foodEntries", async (req, res, next) => {
     FoodEntry.find((err, entry) => {
       if (err) return res.status(500).send(err)
       return res.status(200).send(entry)
-    })
+    }).sort({ eatingTime: -1 }).collation({ locale: "en_US", numericOrdering: true })
   } else {
     FoodEntry.find({ userId: userId }, (err, entry) => {
       if (err) return res.status(500).send(err)
       return res.status(200).send(entry)
-    })
+    }).sort({ eatingTime: -1 }).collation({ locale: "en_US", numericOrdering: true })
   }
 })
 
@@ -89,12 +89,12 @@ router.post("/foodEntries", async (req, res, next) => {
   }
 })
 
-router.put("/foodEntries", async (req, res, next) => {
+router.put("/foodEntries/:foodEntryId", async (req, res, next) => {
   const credentials = await credential_check(req, next)
   if (!credentials || !credentials.isAdmin) return res.status(401).send("Unauthorized")
 
   FoodEntry.findByIdAndUpdate(
-    req.body.foodEntryId,
+    req.param.foodEntryId,
     req.body,
     {new: true},
     (err, ent) => {
