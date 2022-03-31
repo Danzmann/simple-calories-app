@@ -1,4 +1,4 @@
-# Toptal screening task - Calories tracking WebApp
+Calories tracking WebApp
 
 ### Running locally:
 
