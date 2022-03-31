@@ -1,4 +1,6 @@
-Calories tracking WebApp
+### Calories tracking WebApp
+
+Now public for people to see how I code :D
 
 ### Running locally:
 
